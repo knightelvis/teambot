@@ -5,7 +5,7 @@ from slackclient import SlackClient
 
 from functions.todo import TodoList
 from functions.todo import Task
-
+from util import *
 
 class TeamBot:
     '''The TeamBot'''
@@ -182,9 +182,9 @@ class TeamBot:
 
 
 def main():
-    with open("teambot/bot.key", "r") as f:
-        bot_token = f.read().strip()
-    # bot_token = "xoxb-43148308560-JCSDfslycQdC9x6PXU5NMi7J"
+
+    print(db_name)
+
     slack_client = SlackClient(bot_token)
 
     if slack_client.rtm_connect():
