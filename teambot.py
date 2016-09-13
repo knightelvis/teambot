@@ -182,8 +182,11 @@ class TeamBot:
 
 
 def main():
-
-    print(db_name)
+    # these variables are imported from util.
+    # bot_token 
+    # db_name   
+    # db_user   
+    # db_pwd    
 
     slack_client = SlackClient(bot_token)
 
