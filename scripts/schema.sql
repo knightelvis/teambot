@@ -15,7 +15,6 @@ CREATE TABLE Team(
 	register_time DATETIME
 );
 
-
 DROP TABLE IF EXISTS User;
 
 /* User table is to store basic user profile data.*/
@@ -23,7 +22,7 @@ CREATE TABLE User(
 	id BIGINT NOT NULL PRIMARY KEY AUTO_INCREMENT,
 	first_name VARCHAR(100),
 	last_name VARCHAR(100),
-	slack_id VARCHAR(255), # this is only unique within a team
+	slack_userid VARCHAR(255), # this is only unique within a team
 	slack_username VARCHAR(255), # an url points to the picture
 	team_id BIGINT,
 	team_uri VARCHAR(255),
@@ -35,8 +34,10 @@ DROP TABLE IF EXISTS Task;
 
 CREATE TABLE Task (
 	id BIGINT NOT NULL PRIMARY KEY AUTO_INCREMENT,
-	user_id BIGINT, # our unique id, not the slack user id
+	owner_id BIGINT, # our unique id, not the slack user id
+	owner_first_name VARCHAR(100), # for easy use
 	from_user VARCHAR(255), # this is the slack user name
+	from_user_id VARCHAR(255), # this is the user id from the same slack team
 	create_time DATETIME, 
 	due_time DATETIME,
 	content VARCHAR(510), 
