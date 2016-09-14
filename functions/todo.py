@@ -1,5 +1,6 @@
 import datetime as dt
 import random
+import functions.models as models
 
 class Task:
     '''The task object'''
@@ -37,6 +38,17 @@ class TodoList:
     def add_task(self, task):
         '''add a task to this todo list.
             the task should be a string'''
+        
+        # add to Task table
+        models.database.connect()
+        models.Task.create(from_user = task.from_user, 
+                           from_user_id = task.from_user_id,
+                           owner_first_name = task.owner,
+                           content = task.content,
+                           create_time = task.time,
+                           priority = task.priority)
+
+        models.database.close()
 
         # insert based on priority
         # the smaller the higher priority
