@@ -21,21 +21,19 @@ DROP TABLE IF EXISTS User;
 /* User table is to store basic user profile data.*/
 CREATE TABLE User(
 	id BIGINT NOT NULL PRIMARY KEY AUTO_INCREMENT,
-	/* From Uber user profile data */
-	token VARCHAR(255), # not sure how long the access token is in uber
 	first_name VARCHAR(100),
 	last_name VARCHAR(100),
 	slack_id VARCHAR(255), # this is only unique within a team
 	slack_username VARCHAR(255), # an url points to the picture
+	team_id BIGINT,
 	team_uri VARCHAR(255),
-	/* Our user data*/
 	register_time DATETIME,
 	status TINYINT /* 1 DELETED, 2 DEACTIVATED, 0 ACTIVE etc. */
 );
 
-DROP TABLE IF EXISTS Todo;
+DROP TABLE IF EXISTS Task;
 
-CREATE TABLE Todo (
+CREATE TABLE Task (
 	id BIGINT NOT NULL PRIMARY KEY AUTO_INCREMENT,
 	user_id BIGINT, # our unique id, not the slack user id
 	from_user VARCHAR(255), # this is the slack user name
