@@ -40,7 +40,7 @@ class TeamBot:
         words = msg.split()
         candidates = []
         owner = event.get("user_name")
-        owner_id = event.get("user")
+        owner_id = event.get("user") # slack unique user id
 
         # verified
         if words and words.pop(0) == "!add":
@@ -91,12 +91,14 @@ class TeamBot:
 
     def cmd_list(self, event):
         '''should only be used in the direct message'''
+        
         if len(event.get("members")) == 0:
             response = self.list_tasks(event.get("user_name"))
             self.post_msg(event.get("channel"), response)
 
     def cmd_rm(self, event):
         '''should only be used in the direct message'''
+
         if len(event.get("members")) == 0:
             words = [x.strip() for x in event.get("text").split()]
 

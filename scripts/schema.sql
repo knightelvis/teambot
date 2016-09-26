@@ -36,11 +36,12 @@ CREATE TABLE Task (
 	id BIGINT NOT NULL PRIMARY KEY AUTO_INCREMENT,
 	owner_id BIGINT, # our unique id, not the slack user id
 	owner_first_name VARCHAR(100), # for easy use
+	owner_slack_username VARCHAR(255),
 	from_user VARCHAR(255), # this is the slack user name
 	from_user_id VARCHAR(255), # this is the user id from the same slack team
 	create_time DATETIME, 
 	due_time DATETIME,
 	content VARCHAR(510), 
-	status TINYINT, # 0 todo, 1 completed
+	status TINYINT, # 0 todo, 1 completed, 2 deleted
 	priority TINYINT # the lower the higher priority
 );
