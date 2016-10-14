@@ -25,6 +25,7 @@ class Task:
                            create_time = dt.datetime.now(),
                            priority = int(priority),
                            status = 0) # 0 -> todo
+        self.uid = self.db_task.id
 
     def days_to_today(self):
         return abs(dt.datetime.now() - self.db_task.create_time).days
@@ -94,13 +95,17 @@ class TodoList:
             if index >= 1 and index <= len(self.tasks):
                 removed.append(self.tasks.pop(index - 1))
 
+        self.remove_tasks_in_db(removed)
+
         return removed
 
-    def remove_tasks(self, task_ids):
-        '''Remove the tasks of given ids from db'''
-        
-        # return the deleted tasks
-        deleted = []      
+
+
+    def remove_tasks_in_db(self, tasks):
+        '''
+        Remove the tasks.
+        The input are the todo.Task
+        '''        
         models.database.connect()
 
         for task_id in task_ids:
@@ -111,8 +116,7 @@ class TodoList:
         
         models.database.close()
 
-        return deleted
-
+        return 
 
     def task_List(self):
         '''return a list of tasks added to this todo list'''

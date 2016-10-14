@@ -25,6 +25,11 @@ class TeamBot:
             list_tasks_with_priority()
 
     def remove_tasks(self, owner, indices):
+        '''
+        This indices are the order where the tasks 
+        are displayed to the user
+        '''
+        
         return self.todos.get(owner, TodoList(owner)).remove_tasks(indices)
 
     def convert_user_id_to_name(self, s):
@@ -145,7 +150,7 @@ class TeamBot:
 
         # only response to message for now
         if type == "message" and subtype == "none":
-            user_id = event.get("user", "")
+            user_id = event.get("user", "") # slack user id
             user_name = self.slack_client.server.users.find(user_id).name
             event["user_name"] = user_name
 
@@ -184,6 +189,8 @@ class TeamBot:
 
 
 def main():
+    '''This bot is only working for a single team right now'''
+
     # these variables are imported from util.
     # bot_token 
     # db_name   
