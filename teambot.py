@@ -14,22 +14,37 @@ class TeamBot:
         self.slack_client = slack_client
         self.todos = {}
 
-    def add_todo(self, from_user, from_user_id, owner, content, priority):
-
-        task = Task(from_user, from_user_id, owner, content, priority)
-        print(self.todos.get(owner))
-        self.todos.setdefault(owner, TodoList(owner)).add_task(task)
+    def add_todo(self, from_user, from_user_id, 
+            owner, content, priority):
+        '''Add a task to the list'''
+        todo.create_task(from_user, from_user_id, 
+                owner, content, priority)
+        
+        # print(self.todos.get(owner))
+        # self.todos.setdefault(owner, TodoList(owner)).add_task(task)
 
     def list_tasks(self, owner):
-        return self.todos.get(owner, TodoList(owner)). \
-            list_tasks_with_priority()
+        '''
+        return a ready-to-display string of listed tasks
+        '''
+        return todo.convert_tasks_to_string(owner,
+            list_task(owner))
+
 
     def remove_tasks(self, owner, indices):
         '''
         This indices are the order where the tasks 
         are displayed to the user
+
+        indices is a list of string interpreted number
         '''
-        
+        tasks = list_task(owner)
+
+
+        if not todo.is_valid_task_index(len(tasks), indices):
+            
+
+        tasks = 
         return self.todos.get(owner, TodoList(owner)).remove_tasks(indices)
 
     def convert_user_id_to_name(self, s):

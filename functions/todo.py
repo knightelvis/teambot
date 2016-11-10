@@ -2,6 +2,103 @@ import datetime as dt
 import random
 import functions.models as models
 
+
+def is_valid_task_index(task_num, indices):
+    return all((index >= 1) and 
+            (index <= task_num) 
+            for index in indices)
+
+def creat_task(from_user, from_user_id, 
+                owner, content, priority=3):
+    '''
+    Create a task with given params.
+    '''
+    models.database.connect()
+    db_task =  models.Task.create(from_user = from_user,
+                from_user_id = from_user_id,
+                owner_first_name = owner,
+                content = content,
+                create_time = dt.datetime.now(),
+                priority = int(priority),
+                status = 0) # 0 -> todo
+    models.database.close()
+    return db_task
+
+def complete_task(task_id):
+    '''
+    Mark tasks as completed in the db.
+    '''
+    models.database.connect()
+    for task_id in task_ids:
+        temp_task = models.Task.select().where(
+                Task.id == task_id)
+        temp_task.status = 2; # deleted
+        temp_task.save()
+        deleted.append(temp_task)
+    
+    models.database.close()
+    pass
+
+def list_task(owner):
+    '''
+    list active tasks for the given owner in the 
+    orcer of priority
+
+    owner: slack_username
+    '''
+    models.database.connect()
+    try: 
+        tasks = models.Task.select().where(
+            (Task.owner_slack_username == owner) & 
+            (Task.status == 0)
+            ).order_by(Task.priority)
+
+        return tasks
+    except:
+        print("Unexpected error:", sys.exc_info()[0])
+
+    finally:
+        models.database.close()
+
+def convert_tasks_to_string(owner, tasks):
+    '''
+    Order the given list in priority order.
+    owner: the user's name
+    takss: list of tasks
+
+    return a ready-to-display string
+    '''
+    out = "*" + owner + "\'s list:" + "*"
+    num = 1
+    if tasks:
+        for task in tasks:
+            out = out + "\n" + "*" + str(num) + "*" + " - " + "_" + \
+                to_string(task).strip() + "_" + ";\n"
+            num += 1
+    else:
+        # remove the last :
+        out = out[:-1] + " is empty! :thumbsup:"
+
+    return out
+
+def days_to_today(db_task):
+    return (abs(dt.datetime.now() - 
+                db_task.create_time).days)
+
+
+def to_string(db_task):
+    days = days_to_today(db_task)
+    out = ""
+    if days > 1:
+        out += "-" + str(days) + " days"
+    elif days == 1:
+        out += "-" + str(days) + " day"
+    elif days == 0:
+        out += "today"
+    return (out + " | from " + db_task.from_user + 
+                " | " + db_task.content)
+
+
 class Task:
     '''
     The task object; this is a representation on top of the 
@@ -118,14 +215,15 @@ class TodoList:
 
         return 
 
-    def task_List(self):
-        '''return a list of tasks added to this todo list'''
-        return self.tasks
 
     def list_tasks(self, owner):
         try: 
             models.database.connect()
-            models.Task.select()
+            tasks = models.Task.select().where(
+                (Task.owner_slack_username == owner) & (Task.status == 0)
+                ).order_by(Task.due_time)
+
+            return tasks
         except:
             print("Unexpected error:", sys.exc_info()[0])
 
