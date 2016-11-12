@@ -2,13 +2,14 @@ import datetime as dt
 import random
 import functions.models as models
 
+#import sys
 
 def is_valid_task_index(task_num, indices):
     return all((index >= 1) and 
             (index <= task_num) 
             for index in indices)
 
-def creat_task(from_user, from_user_id, 
+def create_task(from_user, from_user_id, 
                 owner, content, priority=3):
     '''
     Create a task with given params.
@@ -16,7 +17,7 @@ def creat_task(from_user, from_user_id,
     models.database.connect()
     db_task =  models.Task.create(from_user = from_user,
                 from_user_id = from_user_id,
-                owner_first_name = owner,
+                owner_slack_username = owner,
                 content = content,
                 create_time = dt.datetime.now(),
                 priority = int(priority),
@@ -46,12 +47,13 @@ def list_task(owner):
 
     owner: slack_username
     '''
+    print("#list owner:" + owner)
     models.database.connect()
     try: 
         tasks = models.Task.select().where(
-            (Task.owner_slack_username == owner) & 
-            (Task.status == 0)
-            ).order_by(Task.priority)
+            (models.Task.owner_slack_username == owner) & 
+            (models.Task.status == 0)
+            ).order_by(models.Task.priority)
 
         return tasks
     except:
@@ -218,6 +220,7 @@ class TodoList:
 
     def list_tasks(self, owner):
         try: 
+            Task.from_user
             models.database.connect()
             tasks = models.Task.select().where(
                 (Task.owner_slack_username == owner) & (Task.status == 0)

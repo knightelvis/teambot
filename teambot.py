@@ -1,10 +1,12 @@
 import time
 import re
+import sys
 
 from slackclient import SlackClient
 
-from functions.todo import TodoList
-from functions.todo import Task
+# from functions import todo
+from functions.todo import create_task, list_task, convert_tasks_to_string
+
 from util import *
 
 class TeamBot:
@@ -12,12 +14,11 @@ class TeamBot:
 
     def __init__(self, slack_client):
         self.slack_client = slack_client
-        self.todos = {}
 
     def add_todo(self, from_user, from_user_id, 
             owner, content, priority):
         '''Add a task to the list'''
-        todo.create_task(from_user, from_user_id, 
+        create_task(from_user, from_user_id, 
                 owner, content, priority)
         
         # print(self.todos.get(owner))
@@ -27,7 +28,7 @@ class TeamBot:
         '''
         return a ready-to-display string of listed tasks
         '''
-        return todo.convert_tasks_to_string(owner,
+        return convert_tasks_to_string(owner,
             list_task(owner))
 
 
@@ -40,12 +41,12 @@ class TeamBot:
         '''
         tasks = list_task(owner)
 
+        removed = []
+        for index in map(int, indices):
+            if index >= 1 and index <= len(tasks):
+                removed.append(tasks.pop(index - 1))
 
-        if not todo.is_valid_task_index(len(tasks), indices):
-            
-
-        tasks = 
-        return self.todos.get(owner, TodoList(owner)).remove_tasks(indices)
+        return removed
 
     def convert_user_id_to_name(self, s):
         if s and s.startswith("<@") and s.endswith(">"):
