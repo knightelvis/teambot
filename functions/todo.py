@@ -27,18 +27,18 @@ def create_task(from_user, from_user_id,
 
 def complete_task(task_id):
     '''
-    Mark tasks as completed in the db.
+    Mark task as completed in the db.
     '''
+
     models.database.connect()
-    for task_id in task_ids:
-        temp_task = models.Task.select().where(
-                Task.id == task_id)
-        temp_task.status = 2; # deleted
-        temp_task.save()
-        deleted.append(temp_task)
+    
+    temp_task = models.Task.select().where(
+            models.Task.id == task_id).get()
+    temp_task.status = 2; # deleted
+    temp_task.save()
     
     models.database.close()
-    pass
+    
 
 def list_task(owner):
     '''
@@ -50,17 +50,26 @@ def list_task(owner):
     print("#list owner:" + owner)
     models.database.connect()
     try: 
+        # here tasks is a SelectQuery
         tasks = models.Task.select().where(
             (models.Task.owner_slack_username == owner) & 
             (models.Task.status == 0)
             ).order_by(models.Task.priority)
 
-        return tasks
+        return convert_select_query_to_list(tasks)
     except:
         print("Unexpected error:", sys.exc_info()[0])
 
     finally:
         models.database.close()
+
+def convert_select_query_to_list(select_query):
+
+    return_list = []
+    for query in select_query:
+        return_list.append(query)
+
+    return return_list
 
 def convert_tasks_to_string(owner, tasks):
     '''
@@ -75,7 +84,7 @@ def convert_tasks_to_string(owner, tasks):
     if tasks:
         for task in tasks:
             out = out + "\n" + "*" + str(num) + "*" + " - " + "_" + \
-                to_string(task).strip() + "_" + ";\n"
+                task_to_string(task) + "_" + ";\n"
             num += 1
     else:
         # remove the last :
@@ -88,17 +97,17 @@ def days_to_today(db_task):
                 db_task.create_time).days)
 
 
-def to_string(db_task):
+def task_to_string(db_task):
     days = days_to_today(db_task)
     out = ""
     if days > 1:
-        out += "-" + str(days) + " days"
+        out += str(days) + " days ago"
     elif days == 1:
-        out += "-" + str(days) + " day"
+        out += str(days) + " day ago"
     elif days == 0:
         out += "today"
     return (out + " | from " + db_task.from_user + 
-                " | " + db_task.content)
+                " | " + db_task.content).strip()
 
 
 class Task:

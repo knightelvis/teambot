@@ -5,7 +5,8 @@ import sys
 from slackclient import SlackClient
 
 # from functions import todo
-from functions.todo import create_task, list_task, convert_tasks_to_string
+from functions.todo import create_task, list_task, complete_task, \
+convert_tasks_to_string, task_to_string
 
 from util import *
 
@@ -39,13 +40,16 @@ class TeamBot:
 
         indices is a list of string interpreted number
         '''
+
         tasks = list_task(owner)
 
         removed = []
         for index in map(int, indices):
+            print("removed:" + str(index))
             if index >= 1 and index <= len(tasks):
-                removed.append(tasks.pop(index - 1))
-
+                task_removed = tasks.pop(index - 1)
+                removed.append(task_removed)
+                complete_task(task_removed.id)
         return removed
 
     def convert_user_id_to_name(self, s):
@@ -129,7 +133,7 @@ class TeamBot:
 
                 if removed:
                     for task in removed:
-                        response += "~" + task.to_string().strip() + "~" + "\n"
+                        response += "~" + task_to_string(task) + "~" + "\n"
                         self.notify_other(task)
                 else:
                     response += "None\n"
@@ -151,7 +155,7 @@ class TeamBot:
     def notify_other(self, task):
         
         # if the task is filed by the owner, skip
-        if task.owner == task.from_user:
+        if task.owner_slack_username == task.from_user:
             return
 
         res = self.slack_client.api_call("im.open", user = task.from_user_id)
@@ -192,16 +196,21 @@ class TeamBot:
 
     def await(self):
         while True:
-            # this returns a list of slack Events?
-            events = self.slack_client.rtm_read()
 
-            if len(events) > 0:
-                for event in events:
-                    print("event:")
-                    print(event)
-                    self.handle_event(event)
+            try:
+                # this returns a list of slack Events?
+                events = self.slack_client.rtm_read()
 
-            time.sleep(1)
+                if len(events) > 0:
+                    for event in events:
+                        print("event:")
+                        print(event)
+                        self.handle_event(event)
+
+            except:
+                print("Unexpected error:", sys.exc_info()[0])
+
+                time.sleep(1)
 
 
 def main():
