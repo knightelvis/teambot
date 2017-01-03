@@ -1,8 +1,7 @@
 
 ./__pycache__/*
-
 *.pyc
-
 *.key
-
+venv3/*
+.DS_Store
 venv3/*
