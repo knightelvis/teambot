@@ -50,6 +50,7 @@ class TeamBot:
                 task_removed = tasks.pop(index - 1)
                 removed.append(task_removed)
                 complete_task(task_removed.id)
+            break # currently only one task to be removed at a time
         return removed
 
     def convert_user_id_to_name(self, s):
